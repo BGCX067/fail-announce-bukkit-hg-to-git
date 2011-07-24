@@ -88,7 +88,7 @@ public class FailAnnounce extends JavaPlugin {
         
        
         
-                
+                scan.close();
         Logger.getLogger("Minecraft").info("FailAnnounce loaded.");
                 
     }
