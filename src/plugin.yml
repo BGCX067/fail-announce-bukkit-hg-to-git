@@ -1,0 +1,8 @@
+name: FailAnnounce
+main: me.everdras.failannounce.FailAnnounce
+version: 0.1.1
+commands:
+    fail:
+        description: Indicates a failure
+        usage: /fail or /fail name
+        aliases: [echoue, échoue]
