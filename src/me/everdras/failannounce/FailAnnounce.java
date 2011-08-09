@@ -133,7 +133,7 @@ public class FailAnnounce extends JavaPlugin {
             
         }
         else if(args.length == 1){
-            if(permissionHandler != null ? permissionHandler.has(player, "FailAnnounce.other") : player.isOp()) {
+            if(permissionHandler != null ? !permissionHandler.has(player, "FailAnnounce.other") : !player.isOp()) {
                 sender.sendMessage("Insufficient permission.");
                 return true;
             }
