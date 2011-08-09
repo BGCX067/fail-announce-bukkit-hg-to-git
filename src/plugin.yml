@@ -1,6 +1,6 @@
 name: FailAnnounce
 main: me.everdras.failannounce.FailAnnounce
-version: 0.1.1
+version: 0.2.0
 commands:
     fail:
         description: Indicates a failure
