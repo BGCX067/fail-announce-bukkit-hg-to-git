@@ -6,12 +6,10 @@ commands:
         description: Indicates a failure
         usage: /fail or /fail name
         aliases: [echoue, échoue, epicfail]
-        
     win:
-    description: Indicates a win
-    usage: /win other
-    aliases: [gagne, réussis, reussis]
-    
+        description: Indicates a win
+        usage: /win other
+        aliases: [gagne, réussis, reussis]
     fa:
-    description: sets options and such
-    usage: /fa ignoreDefaults true/false
+        description: sets options and such
+        usage: /fa ignoreDefaults true/false

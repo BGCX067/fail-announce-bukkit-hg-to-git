@@ -127,6 +127,11 @@ public class FailAnnounce extends JavaPlugin {
                    sender.sendMessage("That player is not online.");
                    return true;
                }
+                
+                if(sGetPlayer(args[0]).equals(player)) {
+                    sender.sendMessage("Humility is a good quality!");
+                    return true;
+                }
 
                getServer().broadcastMessage(ChatColor.DARK_GREEN + sGetPlayer(args[0]).getName() + getMessage(MessageType.WIN)); 
                logIndication(player, System.currentTimeMillis());
@@ -139,13 +144,13 @@ public class FailAnnounce extends JavaPlugin {
                 sender.sendMessage("Insufficient permissions.");
                 return true;
             }
-            if(args.length < 1) {
+            if(args.length == 0) {
                 sender.sendMessage("/fa ignoreDefaults true/false");
                 return true;
             }
             
-            if(args[1].equalsIgnoreCase("ignoreDefaults")) {
-                if(args.length >= 2) {
+            if(args[0].equalsIgnoreCase("ignoreDefaults")) {
+                if(args.length == 2) {
                     if(args[1].equalsIgnoreCase("true")) {
                         ignoreDefaults = true;
                         sender.sendMessage("Now ignoring default messages.");
