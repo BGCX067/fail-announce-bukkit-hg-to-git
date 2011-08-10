@@ -29,7 +29,7 @@ public class FailAnnounce extends JavaPlugin {
     public static final File dir = new File("plugins" + File.separator + "FailAnnounce" + File.separator);
     public static final File winpath = new File("plugins" + File.separator + "FailAnnounce" + File.separator + "Win_Messages.txt");
     
-    private final Player[] indicators = new Player[2];
+    private final String[] indicators = new String[2];
     private final long[] indicateTime = new long[2];
     
     private PermissionHandler permissionHandler;
@@ -57,15 +57,17 @@ public class FailAnnounce extends JavaPlugin {
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+        String name;
         if(!(sender instanceof Player)) {
-            Logger.getLogger("Minecraft").info("FailAnnounce: Cannot call this command from the console.");
-            return true;
+            name = "Server";
+        }
+        else {
+            name = ((Player) sender).getName();
         }
         
-        Player player = (Player) sender;
         
-        if(shouldBeThrottled(player)) {
-            if(permissionHandler != null ? !permissionHandler.has(player, "FailAnnounce.unlimited") : !player.isOp()) {
+        if(sender instanceof Player && shouldBeThrottled(name)) {
+            if(permissionHandler != null ? !permissionHandler.has(sender.getServer().getPlayer(name), "FailAnnounce.unlimited") : !sender.getServer().getPlayer(name).isOp()) {
                     
                         sender.sendMessage("Chill out, Eager Beaver. You've indicated too many fails/wins recently!");
                         return true;
@@ -73,39 +75,45 @@ public class FailAnnounce extends JavaPlugin {
         }
         
         
-        String pName = ((Player) sender).getName();
         
         
         
-        if(label.equals("fail")) {
+        
+        
+        if(command.getName().equals("fail")) {
             if(args.length == 0) {
-                getServer().broadcastMessage(ChatColor.DARK_RED + pName + getMessage(MessageType.FAIL));
-                logIndication(player, System.currentTimeMillis());
+                getServer().broadcastMessage(ChatColor.DARK_RED + name + getMessage(MessageType.FAIL));
+                logIndication(name, System.currentTimeMillis());
                 return true;
 
 
             }
 
             else if(args.length == 1){
-                if(permissionHandler != null ? !permissionHandler.has(player, "FailAnnounce.other") : !player.isOp()) {
-                    sender.sendMessage("Insufficient permission.");
-                    return true;
+                
+                if(sender instanceof Player) {
+                    if(permissionHandler != null ? !permissionHandler.has(sender.getServer().getPlayer(name), "FailAnnounce.other") : !sender.getServer().getPlayer(name).isOp()) {
+                        sender.sendMessage("Insufficient permission.");
+                        return true;
+                    }
                 }
 
                 if(sGetPlayer(args[0]) == null) {
                    sender.sendMessage("That player is not online.");
                    return true;
                }
-
-               if(sGetPlayer(args[0]).getName().equalsIgnoreCase("Everdras")) {
-                   sender.sendMessage(ChatColor.BLUE + "Everdras is infallible.");
-                   return true;
+                
+               if(!name.equals("pythros")) {
+                   if(sGetPlayer(args[0]).getName().equalsIgnoreCase("Everdras")) {
+                       sender.sendMessage(ChatColor.BLUE + "Everdras is infallible.");
+                       return true;
+                   }
                }
 
 
 
                getServer().broadcastMessage(ChatColor.DARK_RED + sGetPlayer(args[0]).getName() + getMessage(MessageType.FAIL)); 
-               logIndication(player, System.currentTimeMillis());
+               logIndication(name, System.currentTimeMillis());
                return true;
             }
         }
@@ -128,22 +136,25 @@ public class FailAnnounce extends JavaPlugin {
                    return true;
                }
                 
-                if(sGetPlayer(args[0]).equals(player)) {
+                if(sGetPlayer(args[0]).getName().equals(name)) {
                     sender.sendMessage("Humility is a good quality!");
                     return true;
                 }
 
                getServer().broadcastMessage(ChatColor.DARK_GREEN + sGetPlayer(args[0]).getName() + getMessage(MessageType.WIN)); 
-               logIndication(player, System.currentTimeMillis());
+               logIndication(name, System.currentTimeMillis());
                return true;
             }
         }
         
         else if(label.equals("fa")) {
-            if(permissionHandler == null ? !player.isOp() : !permissionHandler.has(player, "FailAnnounce.options")) {
-                sender.sendMessage("Insufficient permissions.");
-                return true;
+            if(sender instanceof Player) {
+                if(permissionHandler == null ? !sender.getServer().getPlayer(name).isOp() : !permissionHandler.has(sender.getServer().getPlayer(name), "FailAnnounce.options")) {
+                    sender.sendMessage("Insufficient permissions.");
+                    return true;
+                }
             }
+            
             if(args.length == 0) {
                 sender.sendMessage("/fa ignoreDefaults true/false");
                 return true;
@@ -368,7 +379,7 @@ public class FailAnnounce extends JavaPlugin {
         scan.close();
     }
     
-    private boolean shouldBeThrottled(Player p) {
+    private boolean shouldBeThrottled(String p) {
         //if at least two indications are on record and they are by the same person
         if((indicators[0] != null && indicators[1] != null) && (indicators[0].equals(indicators[1]))) {
             //and it's been less than 30 seconds since the last fail and it's the same person
@@ -382,7 +393,7 @@ public class FailAnnounce extends JavaPlugin {
         return false;
     }
     
-    private void logIndication(Player p, long time) {
+    private void logIndication(String p, long time) {
         indicators[1] = indicators[0];
         indicators[0] = p;
         
