@@ -156,7 +156,7 @@ public class FailAnnounce extends JavaPlugin {
             }
             
             if(args.length == 0) {
-                sender.sendMessage("/fa ignoreDefaults true/false");
+                sender.sendMessage("/fa ignoreDefaults/reload");
                 return true;
             }
             
@@ -179,6 +179,20 @@ public class FailAnnounce extends JavaPlugin {
                     return true;
                 }
             }
+            else if(args[0].equalsIgnoreCase("reload")) {
+                if(sender instanceof Player) {
+                    if(permissionHandler == null ? !sender.getServer().getPlayer(name).isOp() : !permissionHandler.has(sender.getServer().getPlayer(name), "FailAnnounce.options")) {
+                        sender.sendMessage("Insufficient permissions.");
+                        return true;
+                    }
+                }
+                
+                composeMessages();
+                sender.sendMessage("FailAnnounce: Messages reloaded.");
+                return true;
+                
+            }
+                
             
         }
         
@@ -344,7 +358,7 @@ public class FailAnnounce extends JavaPlugin {
         try {
             scan = new Scanner(winpath);
         } catch (FileNotFoundException ex) {
-            Logger.getLogger("Minecraft").log(Level.SEVERE, "Error reading file.");
+            Logger.getLogger("Minecraft").log(Level.SEVERE, "FailAnnounce: Error reading file.");
             scan = null;
         }
         
@@ -401,9 +415,12 @@ public class FailAnnounce extends JavaPlugin {
         indicateTime[0] = time;
     }
     
+    
+    
     public enum MessageType {
         FAIL,WIN;
     }
+    
     
     
     
