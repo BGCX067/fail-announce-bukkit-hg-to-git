@@ -4,8 +4,7 @@
  */
 package me.everdras.failannounce;
 
-import com.nijiko.permissions.PermissionHandler;
-import com.nijikokun.bukkit.Permissions.Permissions;
+
 import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -14,13 +13,10 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.ChatColor;
-import org.bukkit.Server;
 import org.bukkit.plugin.Plugin;
 import java.io.*;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Scanner;
-import org.bukkit.entity.Entity;
 
 /**
  *
@@ -34,8 +30,6 @@ public class FailAnnounce extends JavaPlugin {
     private final String[] indicators = new String[2];
     private final long[] indicateTime = new long[2];
     
-    private PermissionHandler permissionHandler;
-    
     private String[] failmessages, winmessages;
     private boolean custFail, custWin, ignoreDefaults;
     
@@ -47,7 +41,6 @@ public class FailAnnounce extends JavaPlugin {
 
     @Override
     public void onEnable() {
-        setupPermissions();
         
         checkFiles();
         
@@ -69,7 +62,7 @@ public class FailAnnounce extends JavaPlugin {
         
         
         if(sender instanceof Player && shouldBeThrottled(name)) {
-            if(permissionHandler != null ? !permissionHandler.has(sender.getServer().getPlayer(name), "FailAnnounce.unlimited") : !sender.getServer().getPlayer(name).isOp()) {
+            if(!sender.hasPermission("FailAnnounce.unlimited") && !sender.getServer().getPlayer(name).isOp()) {
                     
                         sender.sendMessage("Chill out, Eager Beaver. You've indicated too many fails/wins recently!");
                         return true;
@@ -94,7 +87,7 @@ public class FailAnnounce extends JavaPlugin {
             else if(args.length == 1){
                 
                 if(sender instanceof Player) {
-                    if(permissionHandler != null ? !permissionHandler.has(sender.getServer().getPlayer(name), "FailAnnounce.other") : !sender.getServer().getPlayer(name).isOp()) {
+                    if(!sender.hasPermission("FailAnnounce.other") && !sender.getServer().getPlayer(name).isOp()) {
                         sender.sendMessage("Insufficient permission.");
                         return true;
                     }
@@ -133,11 +126,7 @@ public class FailAnnounce extends JavaPlugin {
 
             }
 
-            else if(args.length == 1){
-//                if(permissionHandler != null ? !permissionHandler.has(player, "FailAnnounce.other") : !player.isOp()) {
-//                    sender.sendMessage("Insufficient permission.");
-//                    return true;
-//                }
+            else if(args.length == 1) {
 				
 				if(args[0].equalsIgnoreCase("Server")) {
 					getServer().broadcastMessage(ChatColor.DARK_GREEN + "Server" + getMessage(MessageType.WIN)); 
@@ -163,7 +152,7 @@ public class FailAnnounce extends JavaPlugin {
         
         else if(label.equals("fa")) {
             if(sender instanceof Player) {
-                if(permissionHandler == null ? !sender.getServer().getPlayer(name).isOp() : !permissionHandler.has(sender.getServer().getPlayer(name), "FailAnnounce.options")) {
+                if(!sender.hasPermission("FailAnnounce.options") && !sender.getServer().getPlayer(name).isOp()) {
                     sender.sendMessage("Insufficient permissions.");
                     return true;
                 }
@@ -195,7 +184,7 @@ public class FailAnnounce extends JavaPlugin {
             }
             else if(args[0].equalsIgnoreCase("reload")) {
                 if(sender instanceof Player) {
-                    if(permissionHandler == null ? !sender.getServer().getPlayer(name).isOp() : !permissionHandler.has(sender.getServer().getPlayer(name), "FailAnnounce.options")) {
+                    if(!sender.hasPermission("FailAnnounce.options") && !sender.getServer().getPlayer(name).isOp()) {
                         sender.sendMessage("Insufficient permissions.");
                         return true;
                     }
@@ -284,23 +273,7 @@ public class FailAnnounce extends JavaPlugin {
         return getServer().matchPlayer(name).get(0);
     }
     
-    private void setupPermissions() {
-        if (permissionHandler != null) {
-            return;
-        }
-
-
-
-        Plugin permissionsPlugin = this.getServer().getPluginManager().getPlugin("Permissions");
-
-        if (permissionsPlugin == null) {
-            Logger.getLogger("Minecraft").log(Level.WARNING, "Permissions hook-in failed for Fail Announce.");
-            return;
-        }
-
-        permissionHandler = ((Permissions) permissionsPlugin).getHandler();
-        Logger.getLogger("Minecraft").info("FailAnnounce: Permissions hook-in successful.");
-    }
+    
     
     private void checkFiles() {
         if(!dir.exists()) {
