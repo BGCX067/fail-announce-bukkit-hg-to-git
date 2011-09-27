@@ -18,7 +18,9 @@ import org.bukkit.Server;
 import org.bukkit.plugin.Plugin;
 import java.io.*;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Scanner;
+import org.bukkit.entity.Entity;
 
 /**
  *
@@ -97,6 +99,12 @@ public class FailAnnounce extends JavaPlugin {
                         return true;
                     }
                 }
+				
+				if(args[0].equalsIgnoreCase("Server")) {
+					getServer().broadcastMessage(ChatColor.DARK_RED + "Server" + getMessage(MessageType.FAIL)); 
+					logIndication(name, System.currentTimeMillis());
+					return true;
+				}
 
                 if(sGetPlayer(args[0]) == null) {
                    sender.sendMessage("That player is not online.");
@@ -130,6 +138,12 @@ public class FailAnnounce extends JavaPlugin {
 //                    sender.sendMessage("Insufficient permission.");
 //                    return true;
 //                }
+				
+				if(args[0].equalsIgnoreCase("Server")) {
+					getServer().broadcastMessage(ChatColor.DARK_GREEN + "Server" + getMessage(MessageType.WIN)); 
+					logIndication(name, System.currentTimeMillis());
+					return true;
+				}
 
                 if(sGetPlayer(args[0]) == null) {
                    sender.sendMessage("That player is not online.");
@@ -267,24 +281,7 @@ public class FailAnnounce extends JavaPlugin {
     }
     
     private Player sGetPlayer(String name) {
-        Player bestMatch = null;
-        Server server = getServer();
-        
-        
-        Player[] onlines = server.getOnlinePlayers();
-        
-        for(Player p : onlines) {
-            if(p.getName().startsWith(name)) {
-                return p;
-            }
-            
-        }
-        
-        
-        
-        
-        
-        return null;
+        return getServer().matchPlayer(name).get(0);
     }
     
     private void setupPermissions() {
